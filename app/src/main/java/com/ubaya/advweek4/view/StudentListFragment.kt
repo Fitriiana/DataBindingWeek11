@@ -32,6 +32,16 @@ class StudentListFragment : Fragment() {
         recView.adapter = stdentListAdapter
 
         observeViewModel()
+
+        //week 5 refresh action
+        refreshLayout.setOnRefreshListener {
+            recView.visibility = View.GONE
+            textError.visibility = View.GONE
+            progressLoad.visibility = View.VISIBLE
+            viewModel.refresh()
+            refreshLayout.isRefreshing = false
+        }
+
     }
 
     fun observeViewModel() {
