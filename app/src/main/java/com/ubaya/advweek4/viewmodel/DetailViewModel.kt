@@ -15,8 +15,6 @@ import com.ubaya.advweek4.model.Student
 
 class DetailViewModel(application: Application): AndroidViewModel(application)  {
     val studentsLiveData = MutableLiveData<Student>()
-    val studentLoadErrorLiveData = MutableLiveData<Boolean>()
-    val loadingLiveData = MutableLiveData<Boolean>()
     val TAG  = "volleyTag"
     private var queue: RequestQueue? = null
     fun fetch(studentId:String){
@@ -25,27 +23,24 @@ class DetailViewModel(application: Application): AndroidViewModel(application)  
 //        studentsLiveData.value = student1
 
 
-        studentLoadErrorLiveData.value = false
-        loadingLiveData.value = true
-
         queue = Volley.newRequestQueue(getApplication())
         val url = "http://adv.jitusolution.com/student.php?id=${studentId}"
 
         val stringRequest = StringRequest(
             Request.Method.GET, url, {
-                val sType = object : TypeToken<ArrayList<Student>>(){}.type
                 val result = Gson().fromJson<Student>(it, Student::class.java)
                 studentsLiveData.value = result
-                loadingLiveData.value = false
                 Log.d("showvolley", it)
             },{
-                loadingLiveData.value = false
-                studentLoadErrorLiveData.value = true
                 Log.d("errorvolley", it.toString())
             }
         ).apply {
             tag =TAG
         }
         queue?.add(stringRequest)
+    }
+    override fun onCleared() {
+        super.onCleared()
+        queue?.cancelAll(TAG)
     }
 }
